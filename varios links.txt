@@ -1,0 +1,25 @@
+Curso
+http://www.campusvirtual.frba.utn.edu.ar/especialidad/course/view.php?id=188
+
+Libros
+http://www.utnianos.com.ar/foro/tema-sistemas-operativos-william-stallings-5ta-edici%C3%B3n
+http://www.utnianos.com.ar/foro/tema-sistemas-operativos-operating-system-concepts-8th-edition-silberschatz
+
+VM:
+https://docs.google.com/document/d/1V1gPepNu6yN-XOKyF_1OP0uw3EZ2qgh0FiS_v29QcKM/edit
+sudo mount -t vboxsf folder-name /media/windows-share
+
+Compilar con GCC:
+http://iie.fing.edu.uy/~vagonbar/gcc-make/gcc.htm
+
+Codigo para ir viendo:
+https://github.com/sisoputnfrba
+http://beej.us/guide/bgnet/output/html/singlepage/bgnet.html
+
+Parciales:
+http://www.campusvirtual.frba.utn.edu.ar/especialidad/mod/folder/view.php?id=6268
+
+Mails:
+esigma5@gmail.com
+filgueira.adriano@gmail.com
+
