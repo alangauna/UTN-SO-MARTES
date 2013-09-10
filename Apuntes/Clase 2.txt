@@ -1,0 +1,180 @@
+Sistemas Operativos -- Clase 2
+
+Esteban Masoero (esigma5@gmail.com)
+Dan Balabunek (dbalabunek@yahoo.com.ar)
+Nicolás Raus (nicolasraus@gmail.com)
+Matiás García Isaía (mgarciaisaia@gmail.com)
+
+---------------------------------------------
+
+Bootloader arranca en 
+Modo real (no proteccion ni seguridad)
+cuando termina de resolverse pasa a  Modo Protegido (aparece la seguridad, el modo Kernel)
+
+
+Sistema Operativo
+
+Aplica seguridad
+administra recursos
+capa de abstraccion
+las aplicaciones se vuelven mas complejas
+
+Ejecuta Overhead (Excesiva burocracio computacional) -- Lo que se gana de un lado se pierde del otro.
+
+La aplicacion termina su ejecución con una llamada al sistema.
+
+
+
+Procesos
+---------
+Fuente(*.c)				Objeto(*.o)
+-----------------(Compilacion)------------------------------(Enlace - Link)---------- (Proceso)-----So ejecuta Loader
+
+Link:Intenta enlazar las funciones que no estan definidas en el fuente con las librerias del sistema 
+Enlace Estático:(Se agranda el binario al buscar y pegar la definicion)
+
+Loader carga la aplicación a memoria. Programa cargado en la memoria es un proceso.
+
+
+Un proceso es un programa en ejecucion desde el punto de vista del usuario.
+De un punto de vista funcional es la unidad de trabajo de los sistemas operativos. Cada vez que el SO quiera hacer algo crea un proceso.
+
+Ofrece un punto de vista interno del sistema operativo. Un proceso es una entidad formada por secuencias de instrucciones y conjunto de datos.
+Los procesos tienen un estado de ejecucion que es varia y depende de sus atributos.
+Conjunto de atributos y recursos asociados(archivos abiertos, memoria dinamica, semáforos)
+
+En la memoria principal(Imagen de proceso)
+|
+
+PCB (Process Control Block - Bloque de control de procesos): Estructura que todo SO tiene para poder administrar un proceso.
+------------------------------------------
+STACK (Dinámico)----------------------------> Direcciones / Varibles locales / Argumentos de las funciones
+-------------------
+MEMORIA DINAMICA (Puede crecer)
+----------------------
+DATOS DINAMICOS (HEAP)
+----------------------
+DATOS ESTATICOS-----------------------------> Variables globales
+----------------------
+CODIGO
+
+
+INCLUDE (Directiva de preprocesamiento)
+
+En c los parametros se pasan por copia (valor). * es la copia de la dirección de memoria.
+
+c (el valor de esa variable en ese momento)
+&c (direccion en memoria de la variable)
+
+Atributos de los PCB
+- Identificadores
+- PID (Process ID)
+- PPID (Parent Process ID - Proceso Padre)
+- USER ID
+- Inf. de estado del procesador (copia del valor de todos los registros de la cpu que tenia el proceso en el momento en el que fue interrumpido)
+
+- Inf. de control del proceso
+	- Planificación
+	- Prioridades
+	- Estado (Run, ready, blocked, etc.)
+- Referencias a recursos asociados
+	- Memoria
+	- Archivos
+
+PCB -- > Linux(Task Struct)
+
+
+Traza de ejecucion en la perspectiva del procesador.
+
+Dispacher: Parte del SO que gestiona a los procesos
+
+MP
+-----
+SO(0 a 10)
+-----
+Proceso A
+	Timeout (Realiza copia de los registros del procesador en el pcb que esta en la MP temporalmente)
+---------
+B
+	Timeout
+--------
+C
+	Timeout
+--------
+Proceso A (continúa donde lo dejó)
+
+Timeout (Interrupcion de hardware)
+
+
+
+Cuando el proceso llega a TIMEOUT el SO pasa al siguiente proceso. Intercala los tiempos de ejecución de los mismos.
+
+
+ESTADOS
+
+NOT RUNNING
+RUNNING (Las instrucciones estan en el procesador)
+
+BLOCKED (No está ejecutan. Cuando el proceso tarda mucho, se saca del procesador) El proceso esta a la espera de un evento.
+
+
+PROCESOS ACTIVOS
+---------------------------
+
+|><-------------------------------------><-------------------------------><|
+READY (No están esperando eventos.) ---------------------> Pasa al estado RUN ----------------> BLOCKED|
+|<---------------------------<----------------------------<--------------------------------------------<
+
+Se tienen listas de procesos (PCB)
+
+
+		|<---------------------------------------<--------------------------------<|
+NEW------------>READY (No están esperando eventos.) ---------------------> Pasa al estado RUN-----> EXIT (El proceso termino de ejecutar - REcopila informacion estadistica del proceso para saber como finalizó)
+		|--------------------<------------------- BLOCKED----------<---------------|
+		
+
+
+
+EXIT
+Se borran los datos de codigo, datos y pila. Solo queda el PCB temporalmente. En un momento sale y termina.
+Objetivo es el retorno del proceso.
+
+El valor de retorno informa si la función tuvo éxito. Generalmente si es distinto de 0 es erróneo.
+El valor de retorno del main se guarda en el PCB. EL SO o (tipicamente otro programa) el proceso padre determina si el programa terminó bien o mal.
+
+
+
+		|<---------------------------------------<--------------------------------<|
+NEW------------>READY (No están esperando eventos.) ---------------------> Pasa al estado RUN-----> EXIT (El proceso termino de ejecutar - REcopila informacion estadistica del proceso para saber como finalizó)
+		|--------------------<------------------- BLOCKED----------<---------------|
+		|(Bidireccional)				             |
+		|READY / SUSPENDED<-------------------SUSPENDED / BLOCKED (Lo saqué de memoria principal pero el PCB sigue en memoria / Se guarda en el disco)
+
+La suma de los procesos activos define el grado de Multiprogramación. Para determinar cuán el SO cargado está. El numero decrece cuando pasa a EXIT o a BLOCKED.
+
+
+
+CREACIÓN DE PROCESOS
+
+- ¿QUIÉN? --> OTRO PROCESO (Recursivamente)
+
+SO ----> PP1
+	---------> PH1
+	---------> PH2
+  -----> PP2 
+
+
+En linux INIT tiene PID = 1 y no tiene PPID
+
+LINUX
+Llamada al sistema para que se cree un proceso es FORK() [TENEDOR]
+
+
+WINDOWS
+Se llama CREATE PROCESS
+
+
+CAMBIO DE PROCESO (PROCESS SWITCH) : Deja de ejecutar un proceso y ejecuta otro. Si vuelve a ejecutar el anterior despues no hay cambio de proceso.
+----------------------------------
+CAMBIO DE MODO DE EJECUCIÓN(MODE SWITCH): Cambio de modo Kernel a modo Usuario.
+----------------------------

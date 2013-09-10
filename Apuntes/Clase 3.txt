@@ -1,0 +1,200 @@
+Creación de procesos
+--------------------
+
+int main()
+{
+	PID_T, PID;
+	PID = FORK();
+	If (PID < 0)
+	{
+		error();
+	}
+	else if (PID == 0)
+	{
+		EXEC("/BIN/LS");
+	}
+	Else
+	{
+	WAIT(NULL);
+	Exit(0);
+	}
+}
+
+FORK: Bifurca el flujo del programa en dos partes. Copia del PCB.
+
+IP/PC -> PID
+
+EXEC va a correr el programa que se encuentra en la direccion que se establece.
+
+
+Terminación de procesos
+
+
+
+
+
+
+PLANIFICACIÓN DE PROCESOS: Conjunto de políticas y mecanismos que gobiernan el orden de los procesos
+
+
+P1
+-
+-
+-
+-
+-
+Abrir() Ráfaga E/S
+-
+-
+-
+-
+-
+Escribir()
+-
+-
+-
+-
+
+Ráfagas de CPU: Bloque de instrucciones entre las las rafagas de E/S
+
+
+
+CPU BOUND: Proceso con pocas entradas / salidas y mucho código a procesar. (80% de tiempo usando CPU)
+
+IO BOUND: Poco procesamiento y mucha Entrada/Salidas. (80% de E/S)
+
+
+New: Crea PCB y cuando lo pasa a memoria pasa a Ready
+
+Módulo planificador Largo Plazo: Se ocupa de administrar la cola de los pcb entre el estado New y Ready. Tambipen debe conocer el estado
+Terminado. Por cola o por prioridad trabaja. Cuando un proceso termina entra uno nuevo.
+
+Ready: Está listo para ejecutar.
+
+Multiprocesamiento: Capacidad de procesamiento. 8 procesos -> capacidad de procesamiento de nivel 8.
+
+Despacher (Planificador a corto plazo): Se ocupa de tomar de la cola un proceso y lo pone a ejecutar. Determina el
+algoritmo que prioriza los proc.
+
+SWAP (planificador medio plazo): Suspende un proceso en ejecución y habilita uno nuevo. (Swap Out / Swap In)
+
+Planificador Extra Largo Plazo: Administrador de sistema tiene el poder de establecer las configuraciones. Define políticas (Grados de programacion
+, cantidad de procesos).
+
+
+Tiempos de ejecución:
+
+Planificador Largo Plazo -> Termina proceso
+			 -> Cuando se crea un proceso
+			 -> Se modifica el grado de multiprogramacíon
+				-> Swap In
+				-> Swap Out
+
+Planificador Corto Plazo -> Sale un proceso de ejecución (Pasa a Waiting/Blocked, a Ready o a swap)
+			 -> Cada vez que entra un proceso a Ready (Pasa a New, o Waiting/Blocked)
+
+
+Clasificacion de algoritmos
+Sin Desalojo / Non Preemptive : Entra desde Ready a Running y solo el decide cuando termina.
+
+Con Desalojo / Preemptive : El SO es el que desaloja. Le da un tiempo o lo determina por prioridad.
+
+
+Criterios : Evalúan los algoritmos (Si es bueno o malo)
+	- Utilización de CPU: Si un algoritmo tiene la CPU ocupada todo el tiempo es bueno.
+	- Rendimiento: Procesos finalizados / unidad de tiempo. El que termina más en menos tiempo es mejor.
+	- Tiempo de retorno: Tiempo desde que arranca hasta que termina (Retorna el control a la consola)
+	- Tiempo de respuesta: Tiempo que tarda en terminar la primer ráfaga.
+	- Tiempo de espera: El tiempo el que proceso esta en el estado Ready. La suma del tiempo de todos 
+	los procesos en Ready.
+
+
+Algoritmos
+FCFS - FIFO (Sin Desalojo)
+P1 -> 24
+P2 -> 3
+P3 -> 3
+Tem = (24 + 27) / 3
+
+SJF (Shortest Job First) - Sin Desalojo
+- Si lo dos tienen la misma prioridad se ejecuta el que entra primero. El problema es que puede demorar demasiado (inanición: El tiempo es inaceptablemente
+alto) debido a que hay muchos procesos cortos con la misma prioridad. El proceso no se muere, no termina, solo se demora.
+Tem = (3 + 6) / 3 = 3
+
+SPN/SJF (Con desalojo)
+Se agrega
+	P4 -> 4 en i = 8
+- Entonces cuando se está ejecutando P1 se desaloja en 8 y se continúa con 4 (esto es siempre teniendo en cuenta el tiempo y la prioridad)
+
+Media Exponencial
+Tn+1 = @tn + (1-@)tn
+
+tn+1 = Estimación en Ráfaga n+1
+@tn   = Ejecución en Ráfaga n
+(1-@)tn = Estimación en Ráfaga n
+0<= @<=1
+
+
+@ = 0,5
+T1 = 0 + 0 = 0 T1 = 5
+T2 = 5/2 = 2,5 T2 = 10
+T3 = 10/2 + 2.5/2 = 6,25 T3 = 3
+
+
+Prioridades / SD
+      CPU  P
+P1 -> 24 | 3
+P2 -> 3  | 1
+P3 -> 3  | 3
+
+Prioridad 1 más prioritaria
+
+Ejecuta P2
+Ejecuta P1 (Entra primero)
+Ejecuta P3
+
+Cuando hay muchas prioridades se generan colas de prioridades para no tener que ordenar todo el tiempo.
+
+Cuando la prioridad es muy baja se utiliza Aging. Se utiliza un coeficiente que varia dependiendo de la situación
+para determinar el tiempo a esperar para ejecutar el proceso. Es una forma de evitar la inanición.
+
+Inversión de prioridades (Es un fenómeno)
+
+Protocolo de Herencia de prioridades: Si uno esta esperando al otro, hereda su prioridad hasta que se desbloqueé. Soluciona la inversión
+de prioridades.
+
+
+Round Robin : Los procesos se van a ir alternando. El proceso va ejecutar hasta 2 instantes. Luego salta una interrupción para
+poner al siguiente. (Con desalojo).
+
+Prioridades
+Interrupción FIN Q
+	     FIN E/S
+SystemCall   NEW();
+
+El reloj es quien más prioridad tiene. Luego el teclado.
+
+      CPU  E/S   CPU    TLL
+P1 -> 3  | 3   |  1  |   0
+P2 -> 3  | 1   |  1  |   0
+P3 -> 1  | 3   |  2  |   1
+P4 -> 3  | 5   |  1  |   2
+
+
+TTL: Tiempo de llegada
+Q(Quantum) = 2
+E/S no se maneja con Q
+
+T | Running           RQ         E/S
+t0     -    	 P1,P2            -   
+ 1    P1         P2,P3            -
+ 2    P2         P3,P1(1),P4      -
+ 4    P3         P1(1),P4,P2(1)   -
+ 5    P1(1)      P4,P2(1)         P3
+ 6    P4         P2(1),P3         P1
+ 8    P2(1)      P3,P4(1)         P1
+ 9    P3         P4(1),P1         P2
+11    P4(1)      P1,P2
+12    P1         P2               P4
+13    P2         -                P4
+17    P4         -                P4      

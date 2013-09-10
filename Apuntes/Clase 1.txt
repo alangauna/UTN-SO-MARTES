@@ -1,0 +1,197 @@
+Sistemas Operativos K3073
+
+Prof. Esteban
+
+Campus Virtual --> Clave: K3073 (K mayúscula)
+
+2 parciales + 2 recuperatorios
+
+tp (2 recuperatorios) + coloquio individual
+FUSE (Biblioteca de C para linux)
+
+Temario
+- Arquitectura
+- S.O.
+- Procesos
+- Planificación
+- Hilos
+- Sincronización
+- Interbloqueo
+-------------------------------------- Parcial
+- Memoria + Memoria Virtual
+- E /S
+- File System
+
+Bibliografía
+Stallings >= 5ta Edición
+Silberschatz >= 7ma Edición
+
+http://github.com/sisoputnfrba/
+
+http://faqoperativos.com.ar
+
+
+Sistema Operativo: Software que interactua con el hardware y administra los recursos con el objetivo de proveer un servicio a las aplicaciones
+
+Resto de los programas
+	S.O.
+----------------------------
+	Bios
+	HW
+
+
+
+
+CPU
+Registros(
+-PC(Program Counter) : contiene la direccion de la proxima instruccion a ejecutar
+-IR : Guada la instruccion que contiene la PC
+-MAR (Memory Address Registry) : La direccion del proximo operando
+-MBR Memory Buffer Registry: La instruccion propiamente dicha.
+)
+Execution Unit
+
+Dispositivos I/O (Comunicacion externa)
+
+Memoria
+
+Todo se conecta con el bus de datos.
+
+La cache almacena datos para no tener que acceder a memoria
+
+
+
+C
+
+Register int a; (Lleva a registro un dato para su uso prolongado)
+
+
+Registros
+Visibles al usuario: 
+Pueden ser eventualemnte manipulados por la aplicacion en curso. (AX/BX/CX)
+
+No visibles (Control y Estado) 
+MBR IR PC MAR
+Flags( Zero / Overflow / Carry )
+
+Ciclo de ejecucion de instruccion
+--> Fetch---> Execute--> (Se repite secuencialmente)
+|
+|
+Hubo interrupcion? --> Interrup Handler (Al PC le pone un valor especifico y despues vuelve al Fetch)
+
+
+
+
+Interrupciones
+-----------------
+Procesador manda codigo a modulo y este se encarga de avisarle de manera sincronica si esta listo o no mediante las interrupciones
+
+i/o --> CPU (La inversa no pasa)
+CPU --> CPU (El receptor siempre es la cpu)
+
+Interrumpe la ejecucion secuencal del procesador. CPU tiene manejador de interrupcion (Interrup Handler - parte del S.O.)
+Cuando el interrup handler termina vuelve a la proxima instruccion del cpu.
+
+
+2 categorias de interrumpciones
+Hardware (Asincronicas) El resto que vienen de afuera
+Software (Sincronicas) CPU --> CPU
+
+Interrupción - Clock: Dispositivo que manda tics. Le da timing a la aplicacion. Determina el tiempo en el que se ejecutan las ejecuciones.
+
+Nueva interrupcion
+Pueden pasar dos cosas
+- Se ignora 
+- Multiple interrumpcion
+
+La ejecucion depende de las prioridades.
+
+Instruccion Enmascarable: Se puede ignorar y no atender en el momento. Bit de interrupcion activa se ignora y se atiende más tarde.
+
+
+
+Modos de ejecución (Garantizar seguridad) o anillos de proteccion
+
+Niveles
+0 + prioridad (Puede hacer todo)
+1
+2
+3 - Menos prioridad (Restringido)
+
+Determinan que instrucciones se pueden ejecutar y cuales no.
+Se guarda eb un registro (CPL) - No es visible al usuario
+
+En caso de error salta la interrupcion y se llama al S.O.
+
+
+
+
+
+
+
+
+Sistema Operativo
+
+Cumple dos funciones
+interfase entre hardware y el usuario
+administra los recursos de hardware
+
+
+|Aplicaciones
+|API (Funciones Application Program Interfase)- Systems Calls (Punto de entrada al sistema operativo)
+|SO
+|HW
+
+
+Sistemas Operativos pasaron de Monoprogramados (DOS) --> Multiprogramados (Tiempo Compartido - se distribuye entre los usuarios)
+
+Modos de ejeciición
+2 niveles o modos
+	- Usuario (Aplicaciones)
+	- Kernel (API / SO - tmb se dice Superusuario)
+
+Intel ofrece 4 anillos de protección
+el primer programa es el So y arranca con todos los privilegios.Luego le cede el control a las aplicaciones
+El SO corre en el nivel de mayor prioridad
+Las aplicaciones en el menor nivel
+
+
+Instrucciones privilegiadas
+- Modo Kernel (ejecuta todo)
+
+Instrucciones no privilegiadas
+- Modo usuario
+
+
+
+
+
+Execute --> Hardware valida las instrucciones y aplica la seguridad.
+
+El SO lidia con ese problema. Lo finaliza / envía mensaje de error. (Segmentation Fault)
+
+Las funciones llaman a otras funciones (llamadas al sistema)
+
+printf llama a write (System Call) por ej.
+
+En las llamadas al sistemas se cambia de modo Usario a Kernel. Ejecuta el código y devuelve el resultado para que siga ejecutando en modo usuario.
+
+El cambio de modo no es automático.
+
+Instrucción de assembler
+-	Syscall (Servicio)
+
+Todo termina en una llamada al sistema excepto con instrucciones no privilegiadas (asignaciones, comparaciones, operaciones)
+
+Si algo está compartido tiene que participar el sistema operativo.
+
+
+
+
+Proceso
+- Unidad para hacer cosas.
+El ejecutable (instrucciones compiladas) es llevado a memoria.
+La definicion de memoria se aplica realmente en memoria.
+
+Un proceso es un programa en ejecucion (Instrucciones + variables declaradas). Que es dinamico que va cambiando. 
